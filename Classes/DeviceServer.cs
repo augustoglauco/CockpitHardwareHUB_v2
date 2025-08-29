@@ -1,194 +1,92 @@
-﻿using WASimCommander.CLI.Enums;
+﻿using System;
 
 namespace CockpitHardwareHUB_v2.Classes
 {
-    internal static class DeviceServer
+    /// <summary>
+    /// Classe de gerenciamento para um único dispositivo de hardware.
+    /// Atua como uma camada intermediária entre a UI e o gerenciador de comunicação.
+    /// Versão refatorada para ser agnóstica ao tipo de comunicação, usando ICommunicationManager.
+    /// </summary>
+    public class DeviceServer
     {
-        internal delegate void UIAddDevice_Handler(COMDevice device);
-        internal static event UIAddDevice_Handler UIAddDevice;
-        internal delegate void UIRemoveDevice_Handler(COMDevice device);
-        internal static event UIRemoveDevice_Handler UIRemoveDevice;
+        private readonly ICommunicationManager _communicationManager;
 
-        private static int IsStarted = 0;
+        /// <summary>
+        /// ID do dispositivo, obtido diretamente do gerenciador de comunicação (ex: "COM3" ou "192.168.1.101").
+        /// </summary>
+        public string Id => _communicationManager.Id;
 
-        internal static uint _FilterVID = 0;
-        internal static uint _FilterPID = 0;
-        internal static string _FilterSerialNumber = "";
+        /// <summary>
+        /// Status da conexão do dispositivo.
+        /// </summary>
+        public bool IsRunning => _communicationManager.IsConnected;
 
-        private static readonly SerialPortManager _SerialPortManager = new();
+        /// <summary>
+        /// Evento que repassa os dados recebidos do gerenciador de comunicação para a camada superior (Form1).
+        /// </summary>
+        public event EventHandler<string> DataReceived;
 
-        private static readonly List<COMDevice> _devices = new();
+        /// <summary>
+        /// Evento que repassa as mudanças de status da conexão para a camada superior (Form1).
+        /// </summary>
+        public event EventHandler<bool> StatusChanged;
 
-        public static COMDevice FindDeviceBasedOnPNPDeviceID(string pnpDeviceID)
+
+        /// <summary>
+        /// Construtor que recebe um gerenciador de comunicação já instanciado (Injeção de Dependência).
+        /// </summary>
+        /// <param name="communicationManager">Uma instância de um comunicador (ex: SerialPortManager ou TcpIpCommunicationManager)</param>
+        public DeviceServer(ICommunicationManager communicationManager)
         {
-            lock(_devices)
-                return _devices.FirstOrDefault(device => device.PNPDeviceID == pnpDeviceID);
+            _communicationManager = communicationManager ?? throw new ArgumentNullException(nameof(communicationManager));
+
+            // Inscreve-se nos eventos do comunicador para poder repassá-los
+            _communicationManager.DataReceived += OnCommunicationManager_DataReceived;
+            _communicationManager.ConnectionStatusChanged += OnCommunicationManager_ConnectionStatusChanged;
         }
 
-        // SerialPortManager Events
-
-        // This is an event handler that is called when USB devices are already connected
-        private static void OnPortFoundEvent(object sender, SerialPortEventArgs spea)
+        /// <summary>
+        /// Inicia a conexão com o dispositivo chamando o método Connect do comunicador.
+        /// </summary>
+        public void Start()
         {
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.OnPortFoundEvent: {spea.PortName}\\{spea.PNPDeviceID} found");
-            Task.Run(() => AddDevice(spea.PNPDeviceID, spea.PortName));
+            _communicationManager.Connect();
         }
 
-        // This is an event handler that is called when USB devices are added
-        private static void OnPortAddedEvent(object sender, SerialPortEventArgs spea)
+        /// <summary>
+        /// Interrompe a conexão com o dispositivo.
+        /// </summary>
+        public void Stop()
         {
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.OnPortAddedEvent: {spea.PortName}\\{spea.PNPDeviceID} added");
-            Task.Run(() => AddDevice(spea.PNPDeviceID, spea.PortName));
+            _communicationManager.Disconnect();
+        }
+        
+        /// <summary>
+        /// Envia dados para o dispositivo através do comunicador.
+        /// </summary>
+        public void SendData(string data)
+        {
+            _communicationManager.SendData(data);
         }
 
-        // This is an event handler that is called when USB devices are removed
-        private static void OnPortRemovedEvent(object sender, SerialPortEventArgs spea)
+        /// <summary>
+        /// Handler interno que é acionado quando o comunicador recebe dados.
+        /// Ele simplesmente repassa o evento para cima.
+        /// </summary>
+        private void OnCommunicationManager_DataReceived(object sender, string data)
         {
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.OnPortRemovedEvent: {spea.PortName}\\{spea.PNPDeviceID} removed");
-            Task.Run(() => RemoveDevice(spea.PNPDeviceID));
+            // Dispara o evento público do DeviceServer
+            DataReceived?.Invoke(this, data);
         }
-
-        public static void Init() // MainForm mainForm)
+        
+        /// <summary>
+        /// Handler interno que é acionado quando o status da conexão do comunicador muda.
+        /// Ele repassa o evento para cima.
+        /// </summary>
+        private void OnCommunicationManager_ConnectionStatusChanged(object sender, bool isConnected)
         {
-            // Setup event handlers for scanning serial ports
-            _SerialPortManager.OnPortFoundEvent += OnPortFoundEvent;
-            _SerialPortManager.OnPortAddedEvent += OnPortAddedEvent;
-            _SerialPortManager.OnPortRemovedEvent += OnPortRemovedEvent;
-
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => "DeviceServer.Init: DeviceServer Initialized");
-        }
-
-        public static void Start()
-        {
-            // Be suspicious, and assume that the call needs to be re-entrant, hence make it threadsafe
-            // If IsStarted == 0, then make it 1, and return the previous value 0 --> execute Start
-            // If IsStarted == 1, then don't change it, and return the previous value 1 --> don't do anything, we are already started
-            if (Interlocked.CompareExchange(ref IsStarted, 1, 0) == 1)
-                return; // Already started
-
-            // start scanning for serial ports
-            // - already connected USB devices will be "found"
-            // - new connected USB devices will be "added"
-            _SerialPortManager.ScanPorts(true, _FilterVID, _FilterPID, _FilterSerialNumber);
-
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => "DeviceServer.Start: DeviceServer Started");
-        }
-
-        public static async Task Stop()
-        {
-            // Be suspicious, and assume that the call needs to be re-entrant, hence make it threadsafe
-            // If IsStarted == 1, then make it 0, and return the previous value 1 --> execute Start
-            // If IsStarted == 0, then don't change it, and return the previous value 0 --> don't do anything, we are already started
-            if (Interlocked.CompareExchange(ref IsStarted, 0, 1) == 0)
-                return; // Already stopped
-
-            // start scanning for serial ports
-            _SerialPortManager.Stop();
-
-            var removalTasks = new List<Task>();
-            lock (_devices)
-            {
-                foreach (COMDevice device in _devices)
-                {
-                    var task = Task.Run(() => RemoveDevice(device));
-                    removalTasks.Add(task);
-                }
-            }
-
-            // Asynchronously wait for all tasks to complete
-            await Task.WhenAll(removalTasks);
-
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => "DeviceServer.Stop: DeviceServer Stopped");
-        }
-
-        internal static void AddDevice(string PNPDeviceID, string DeviceID)
-        {
-            if (DeviceID != "VIRTUAL")
-            {
-                // If we have a real PNPDeviceID, do some parsing on PNPDeviceID to be sure we have correct type of device - be very restrictive, we can still adapt in the future
-                string[] parts = PNPDeviceID.Split(new string[] { "\\" }, StringSplitOptions.None);
-                if (parts.Length != 3)
-                {
-                    Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.AddDevice: PNPDeviceID \"{PNPDeviceID}\" has not 3 parts");
-                    return;
-                }
-                else if (parts[0] != "USB")
-                {
-                    Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.AddDevice: PNPDeviceID \"{PNPDeviceID}\" is not USB");
-                    return;
-                }
-                else if (parts[2] == "")
-                {
-                    Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.AddDevice: PNPDeviceID \"{PNPDeviceID}\" has no serial number");
-                    return;
-                }
-            }
-
-            COMDevice device = new(PNPDeviceID, DeviceID);
-
-            if (DeviceID != "VIRTUAL")
-            {
-                if (!device.Open())
-                {
-                    Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.AddDevice: {device} unable to open");
-                    return; // Unable to open COMDevice
-                }
-
-                // Try a maximum of 5 times to connect with COMDevice
-                for (int i = 0; i < 5; i++)
-                {
-                    Logging.Log(LogLevel.Debug, LoggingSource.APP, () => $"DeviceServer.AddDevice: {device} GetProperties try {i + 1}");
-                    if (device.GetProperties())
-                    {
-                        lock (_devices)
-                            _devices.Add(device); // keep list of all successfully connected devices
-                        UIAddDevice?.Invoke(device);
-                        Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.AddDevice: {device} successfully added");
-                        return;
-                    }
-                    Thread.Sleep(12000); // Arduino's might be in a special state that need 10 seconds to "get back to normal"
-                }
-
-                // if we fail after 5 times, close the device
-                Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.AddDevice: {device} GetProperties failed after 5 times");
-                device.Close();
-            }
-            else
-            {
-                lock (_devices)
-                    _devices.Add(device); // keep list of all successfully connected devices
-                UIAddDevice?.Invoke(device);
-                Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.AddDevice: {device} successfully added");
-                return;
-            }
-        }
-
-        internal static void RemoveDevice(COMDevice device)
-        {
-            lock (_devices)
-                _devices.Remove(device);
-            UIRemoveDevice?.Invoke(device);
-
-            device.Close();
-            Logging.Log(LogLevel.Info, LoggingSource.APP, () => $"DeviceServer.RemoveDevice: {device} successfully removed");
-        }
-
-        internal static void RemoveDevice(string PNPDeviceID)
-        {
-            COMDevice device = FindDeviceBasedOnPNPDeviceID(PNPDeviceID);
-            if (device == null)
-            {
-                Logging.Log(LogLevel.Error, LoggingSource.APP, () => $"DeviceServer.RemoveDevice: {PNPDeviceID} not found in _devices");
-                return;
-            }
-            RemoveDevice(device);
-        }
-
-        internal static void ResetStatistics()
-        {
-            lock (_devices)
-                foreach (COMDevice device in _devices)
-                    device.ResetStatistics();
+            // Dispara o evento público do DeviceServer
+            StatusChanged?.Invoke(this, isConnected);
         }
     }
 }
