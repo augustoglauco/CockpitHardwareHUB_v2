@@ -1,0 +1,33 @@
+Preset/Evento,Tipo,Ação/Valores,Categoria,Descrição
+LIGHTING_Cabin_Light_Set,InputEvent/BVar,"2=ON, 1=OFF",Luzes,Cabin light set (TBM)
+PRESSURIZATION_Bleed_Air_Source_Set,BVar,"2=ON, 1=OFF",Pressurização,Bleed Air Source
+DEICE_Engine_1_Set,BVar,"2=ON, 1=OFF",Anti-Ice,Inertial Separator/Engine anti-ice
+ELECTRICAL_Source_Switch_Set,BVar,"2=ON, 1=OFF",Elétrico,Battery/Source
+ENGINE_Ignition_1_Set,BVar,"2=ON, 1=OFF",Motor,Ignição
+LANDING_LIGHTS_Toggle,Preset,toggle,Luzes,Landing lights
+NAV_LIGHTS_Toggle,Preset,toggle,Luzes,Nav lights
+STROBE_LIGHTS_Toggle,Preset,toggle,Luzes,Strobe
+TAXI_LIGHTS_Toggle,Preset,toggle,Luzes,Taxi
+PARKING_BRAKE_SET,K-Event/Preset,0/1,Freio,Freio estacionamento
+PITOT_HEAT_Toggle,Preset,toggle,Anti-Ice,Pitot heat
+ANTI_ICE_Propeller_Set,Preset,0/1,Anti-Ice,Prop de-ice
+AP_MASTER,Preset,0/1,AP,Autopilot master
+AP_PANEL_HEADING_HOLD,Preset,0/1,AP,HDG
+AP_PANEL_ALTITUDE_HOLD,Preset,0/1,AP,ALT
+AP_NAV1_HOLD,Preset,0/1,AP,NAV
+AP_APR_HOLD,Preset,0/1,AP,APP
+BEACON_LIGHTS_Toggle,Preset,toggle,Luzes,Beacon
+PANEL_LIGHTS_Toggle,Preset,toggle,Luzes,Panel
+TOGGLE_MASTER_BATTERY,Preset,toggle,Elétrico,Battery master
+AVIONICS_MASTER_1_Toggle,Preset,toggle,Elétrico,Avionics 1
+AVIONICS_MASTER_2_Toggle,Preset,toggle,Elétrico,Avionics 2
+FLAPS_INCR,Preset,+1,Flaps,Incremento
+FLAPS_DECR,Preset,-1,Flaps,Decremento
+GEAR_TOGGLE,Preset,toggle,Trem,Trem
+THROTTLE_CUT,Preset,set,Motor,Corte de potência
+PROP_PITCH_INCR,Preset,+,Motor,Passo hélice +
+PROP_PITCH_DECR,Preset,-,Motor,Passo hélice -
+FUEL_SELECTOR_SET,Preset,enum,Combustível,Seletor de tanque
+CABIN_NO_SMOKING_ALERT_SWITCH_Toggle,Preset,toggle,Cabin,No Smoking
+CABIN_SEATBELTS_ALERT_SWITCH_Toggle,Preset,toggle,Cabin,Seatbelts
+BAROMETRIC_STD_PRESSURE,Preset,STD,Voo,Ajustar STD

@@ -1,0 +1,66 @@
+SimVar,Unidade,Settable,Categoria,Observações
+ELECTRICAL MAIN BUS VOLTAGE,Volts,No,Elétrico,Tensão do barramento principal
+AVIONICS MASTER SWITCH:1,Bool,Yes,Elétrico,Avionics master 1
+GENERAL ENG STARTER:1,Bool,Yes,Elétrico,Acionamento do starter
+LIGHT PANEL ON,Bool,Yes,Luzes,Luz de painel
+LIGHT LANDING ON,Bool,Yes,Luzes,Luz de pouso
+LIGHT TAXI ON,Bool,Yes,Luzes,Luz de táxi
+LIGHT STROBE ON,Bool,Yes,Luzes,Strobe
+LIGHT NAV ON,Bool,Yes,Luzes,Navegação
+LIGHT BEACON ON,Bool,Yes,Luzes,Beacon
+STRUCTURAL DEICE SWITCH,Bool,Yes,Anti-Ice,De-ice estrutural
+PITOT HEAT,Bool,Yes,Anti-Ice,Aquecimento do pitot
+GENERAL ENG THROTTLE LEVER POSITION:1,Percent,Yes,Motor,Posição manete
+TURB ENG ITT:1,Celsius,No,Motor,Temperatura ITT
+TURB ENG N1:1,Percent,No,Motor,N1 (%)
+PROP RPM:1,RPM,No,Motor,RPM da hélice
+ENG OIL PRESSURE:1,Psi,No,Motor,Pressão do óleo
+ENG OIL TEMPERATURE:1,Celsius,No,Motor,Temperatura do óleo
+FUEL TANK SELECTOR:1,Enum,Yes,Combustível,Seletor de tanque
+FUEL TOTAL QUANTITY,Gallons,No,Combustível,Quantidade total
+GENERAL ENG FUEL PRESSURE:1,Psi,No,Combustível,Pressão de combustível
+CABIN ALTITUDE,Feet,No,Pressurização,Altitude de cabine
+CABIN PRESSURE DIFFERENTIAL,Psi,No,Pressurização,Delta P
+BRAKE PARKING POSITION,Bool,Yes,Trem/Freios,Freio de estacionamento
+GEAR HANDLE POSITION,Bool,Yes,Trem/Freios,Manete do trem
+GEAR TOTAL PCT EXTENDED,Percent,No,Trem/Freios,% trem estendido
+FLAPS HANDLE INDEX,Number,Yes,Flaps,Índice da alavanca
+FLAPS HANDLE POSITION,Percent,Yes,Flaps,Posição da alavanca
+AIRSPEED INDICATED,Knots,No,Voo,IAS
+AIRSPEED TRUE,Knots,No,Voo,TAS
+INDICATED ALTITUDE,Feet,No,Voo,Altímetro
+PRESSURE ALTITUDE,Feet,No,Voo,Alt pressão
+HEADING INDICATOR,Radians,No,Voo,Direção (DG)
+MAGVAR,Degrees,No,Voo,Variação magnética
+VERTICAL SPEED,Feet per minute,No,Voo,VSI
+AUTOPILOT MASTER,Bool,Yes,AP,AP Master
+AUTOPILOT HEADING LOCK,Bool,Yes,AP,HDG Hold
+AUTOPILOT NAV1 LOCK,Bool,Yes,AP,NAV Hold
+AUTOPILOT APPROACH HOLD,Bool,Yes,AP,APP Hold
+AUTOPILOT ALTITUDE LOCK VAR,Feet,Yes,AP,Alvo de altitude
+AUTOPILOT VERTICAL HOLD VAR,Feet per minute,Yes,AP,Alvo de VS
+NAV ACTIVE FREQUENCY:1,BCD32,Yes,Rádio,NAV1 ativa
+NAV STANDBY FREQUENCY:1,BCD32,Yes,Rádio,NAV1 em espera
+COM ACTIVE FREQUENCY:1,BCD32,Yes,Rádio,COM1 ativa
+COM STANDBY FREQUENCY:1,BCD32,Yes,Rádio,COM1 em espera
+AMBIENT TEMPERATURE,Celsius,No,Ambiente,T OAT
+AMBIENT PRESSURE,inHg,No,Ambiente,Pressão ambiente
+AMBIENT WIND VELOCITY,Knots,No,Ambiente,Vento
+AMBIENT WIND DIRECTION,Degrees,No,Ambiente,Direção do vento
+OUTSIDE AIR TEMPERATURE,Celsius,No,Ambiente,OAT (alternativo)
+RADIO HEIGHT,Feet,No,Voo,Altura rádio
+PLANE ALTITUDE,Feet,No,Voo,Altitude do avião
+PLANE LATITUDE,Degrees,No,Voo,Latitude
+PLANE LONGITUDE,Degrees,No,Voo,Longitude
+TOTAL AIR TEMPERATURE,Celsius,No,Ambiente,TAT
+BAROMETER PRESSURE,Millibars,Yes,Voo,QNH
+GPS GROUND SPEED,Knots,No,Navegação,GS
+GPS WP DISTANCE,Nautical miles,No,Navegação,Dist WP
+GPS WP BEARING,Degrees,No,Navegação,Proa ao WP
+ADF ACTIVE FREQUENCY:1,Hz,Yes,Rádio,ADF ativo
+BRAKE LEFT POSITION,Percent,No,Trem/Freios,Freio esquerdo
+BRAKE RIGHT POSITION,Percent,No,Trem/Freios,Freio direito
+STALL WARNING,Bool,No,Voo,Aviso de estol
+AOA INDICATOR,Radians,No,Voo,Ângulo de ataque
+FLAPS AVAILABLE,Bool,No,Flaps,Flaps disponíveis
+GEAR IS ON GROUND,Bool,No,Trem,Aeronave no solo

@@ -1,0 +1,11 @@
+InputEvent/BVar,Arquivo (Behavior),RPN/Calculator Code,Observações
+LANDING_GEAR_ParkingBrake,TBM930_INTERIOR.XML,1 (>K:PARKING_BRAKE_SET),Parking brake
+LIGHTING_Cabin_Light_Set,TBM930_INTERIOR.XML,2 (>B:LIGHTING_Cabin_Light_Set),Cabin light ON/OFF (2/1)
+PRESSURIZATION_Bleed_Air_Source_Set,TBM930_INTERIOR.XML,2 (>B:PRESSURIZATION_Bleed_Air_Source_Set),Bleed source (2/1)
+DEICE_Engine_1_Set,TBM930_INTERIOR.XML,2 (>B:DEICE_Engine_1_Set),Inertial sep/engine anti-ice (2/1)
+ENGINE_Ignition_1_Set,TBM930_INTERIOR.XML,2 (>B:ENGINE_Ignition_1_Set),Ignition (2/1)
+ELECTRICAL_Source_Switch_Set,TBM930_INTERIOR.XML,2 (>B:ELECTRICAL_Source_Switch_Set),Source/Battery (2/1)
+LIGHTING_Panel_Light,TBM930_INTERIOR.XML,1 (>K:PANEL_LIGHTS_ON),Painel
+LIGHTING_Landing_Light,TBM930_INTERIOR.XML,1 (>K:LANDING_LIGHTS_ON),Landing
+LIGHTING_Taxi_Light,TBM930_INTERIOR.XML,1 (>K:TAXI_LIGHTS_ON),Taxi
+ANTI_ICE_Pitot_Toggle,TBM930_INTERIOR.XML,(>K:PITOT_HEAT_TOGGLE),Pitot
